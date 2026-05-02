@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScholarHub Admin – Restricted</title>
+<meta name="robots" content="noindex, nofollow">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="Referrer-Policy" content="no-referrer">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0c11;--surface:#111318;--surface2:#181c28;--surface3:#1e2235;
+  --border:#252b42;--border2:#2e3550;--ink:#eaecf4;--ink2:#a4adc8;--muted:#5c6480;
+  --primary:#5b8aff;--primary-dark:#4470f0;--primary-glow:rgba(91,138,255,.16);
+  --green:#2dd4a0;--green-bg:rgba(45,212,160,.1);
+  --amber:#f5a623;--amber-bg:rgba(245,166,35,.1);
+  --red:#f07070;--red-bg:rgba(240,112,112,.1);
+  --purple:#9f7afa;--purple-bg:rgba(159,122,250,.1);
+  --cyan:#22d3ee;--cyan-bg:rgba(34,211,238,.1);
+}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;font-size:14px}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+
+/* LOGIN */
+#loginScreen{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1rem}
+.login-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:2.25rem 2rem;width:100%;max-width:360px;text-align:center}
+.login-logo{width:46px;height:46px;background:linear-gradient(135deg,var(--primary),#8b5cf6);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;font-weight:800;color:white;margin:0 auto .9rem;box-shadow:0 0 20px var(--primary-glow)}
+.login-title{font-size:1.15rem;font-weight:700;margin-bottom:.25rem}
+.login-sub{font-size:.8rem;color:var(--muted);margin-bottom:1.6rem}
+.login-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;padding:.7rem .95rem;color:var(--ink);font-size:.88rem;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s;margin-bottom:.65rem}
+.login-input:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-glow)}
+.login-btn{width:100%;background:var(--primary);color:white;border:none;padding:.76rem;border-radius:8px;font-weight:600;font-size:.88rem;cursor:pointer;font-family:inherit;transition:background .15s}
+.login-btn:hover{background:var(--primary-dark)}
+.login-btn:disabled{opacity:.55;cursor:not-allowed}
+.login-err{color:var(--red);font-size:.78rem;margin-top:.45rem;display:none}
+#appShell{display:none}
+
+/* TOPBAR */
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 1.6rem;display:flex;align-items:center;justify-content:space-between;height:52px;position:sticky;top:0;z-index:100}
+.bar-logo{display:flex;align-items:center;gap:.45rem;font-size:.95rem;font-weight:700}
+.bar-mark{width:24px;height:24px;background:linear-gradient(135deg,var(--primary),#8b5cf6);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:.7rem;font-weight:800;color:white;flex-shrink:0}
+.bar-right{display:flex;align-items:center;gap:.55rem;flex-wrap:wrap}
+.topbar-btn{display:inline-flex;align-items:center;gap:.3rem;border-radius:6px;padding:.26rem .72rem;font-size:.74rem;font-weight:600;cursor:pointer;font-family:inherit;text-decoration:none;border:1px solid transparent;transition:all .15s;white-space:nowrap}
+.topbar-btn.view{background:var(--primary-glow);color:var(--primary);border-color:rgba(91,138,255,.22)}
+.topbar-btn.view:hover{background:rgba(91,138,255,.25)}
+.topbar-btn.export{background:var(--green-bg);color:var(--green);border-color:rgba(45,212,160,.2)}
+.topbar-btn.export:hover{background:rgba(45,212,160,.18)}
+.topbar-btn.logout{background:var(--red-bg);color:var(--red);border-color:rgba(240,112,112,.18)}
+.topbar-btn.logout:hover{background:rgba(240,112,112,.22)}
+
+/* STATS BAR */
+.stats-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:.75rem 1.6rem;display:flex;gap:.65rem;overflow-x:auto;scrollbar-width:none}
+.stats-bar::-webkit-scrollbar{display:none}
+.stat-card{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.58rem .95rem;display:flex;align-items:center;gap:.65rem;cursor:pointer;transition:border-color .18s,background .18s;flex-shrink:0;min-width:110px}
+.stat-card:hover{border-color:var(--border2);background:var(--surface3)}
+.stat-card.active{border-color:var(--primary);background:var(--primary-glow)}
+.stat-card.active .stat-num{color:var(--primary)}
+.stat-icon{font-size:1.15rem;flex-shrink:0}
+.stat-info{display:flex;flex-direction:column;gap:.06rem}
+.stat-num{font-size:1.05rem;font-weight:800;color:var(--ink);line-height:1}
+.stat-lbl{font-size:.6rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+.stat-card.green .stat-num{color:var(--green)}
+.stat-card.amber .stat-num{color:var(--amber)}
+.stat-card.red .stat-num{color:var(--red)}
+.stat-card.purple .stat-num{color:var(--purple)}
+
+/* LAYOUT */
+.layout{max-width:1300px;margin:0 auto;padding:1.2rem;display:grid;grid-template-columns:1fr 375px;gap:1.2rem;align-items:start}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.panel-hd{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.1rem;border-bottom:1px solid var(--border);background:var(--surface2);gap:.65rem;flex-wrap:wrap}
+.panel-title{font-size:.82rem;font-weight:700;flex-shrink:0}
+.panel-hd-right{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap}
+.search-mini{background:var(--surface3);border:1px solid var(--border);border-radius:6px;padding:.28rem .65rem;color:var(--ink);font-size:.76rem;font-family:inherit;outline:none;width:165px;transition:border-color .15s}
+.search-mini:focus{border-color:var(--primary)}
+.search-mini::placeholder{color:var(--muted)}
+
+/* STATUS FILTER TABS */
+.tbl-filter-tabs{display:flex;gap:.28rem;padding:.55rem .95rem;border-bottom:1px solid var(--border);background:var(--surface);overflow-x:auto;scrollbar-width:none}
+.tbl-filter-tabs::-webkit-scrollbar{display:none}
+.tbl-ftab{background:none;border:1px solid var(--border);border-radius:16px;color:var(--muted);font-size:.68rem;font-weight:600;padding:.18rem .58rem;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap}
+.tbl-ftab:hover{color:var(--ink2)}
+.tbl-ftab.active{background:var(--primary-glow);color:var(--primary);border-color:rgba(91,138,255,.3)}
+.tbl-ftab.pub.active{background:var(--green-bg);color:var(--green);border-color:rgba(45,212,160,.3)}
+.tbl-ftab.draft.active{background:var(--amber-bg);color:var(--amber);border-color:rgba(245,166,35,.3)}
+.tbl-ftab.expired.active{background:var(--red-bg);color:var(--red);border-color:rgba(240,112,112,.3)}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+thead th{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);padding:.6rem .9rem;border-bottom:1px solid var(--border);text-align:left;background:var(--surface2);white-space:nowrap;cursor:pointer;user-select:none;transition:color .12s}
+thead th:hover{color:var(--ink2)}
+thead th.sorted-asc::after{content:'  ↑';color:var(--primary)}
+thead th.sorted-desc::after{content:'  ↓';color:var(--primary)}
+thead th:last-child{cursor:default}
+thead th:nth-child(1){width:64px}
+thead th:nth-child(3){width:120px}
+thead th:nth-child(4){width:115px}
+thead th:nth-child(5){width:106px}
+thead th:nth-child(6){width:95px}
+thead th:nth-child(7){width:130px}
+tbody tr{border-bottom:1px solid var(--border);transition:background .12s,box-shadow .12s;cursor:default}
+tbody tr:last-child{border-bottom:none}
+tbody tr:hover{background:rgba(30,34,53,.7)}
+tbody tr:hover .row-title{color:var(--primary)}
+tbody tr.expired-row{opacity:.55}
+td{padding:.7rem .9rem;vertical-align:middle}
+
+/* Logo tile */
+.row-logo-wrap{width:46px;height:46px;border-radius:10px;overflow:hidden;flex-shrink:0;display:flex;align-items:center;justify-content:center;border:1px solid rgba(255,255,255,.06)}
+.row-logo-wrap img{width:100%;height:100%;object-fit:cover;display:block}
+.row-logo-icon{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.35rem}
+.type-scholarship .row-logo-icon{background:linear-gradient(135deg,#1a2a4a,#253d72)}
+.type-fellowship .row-logo-icon{background:linear-gradient(135deg,#251a45,#3b2872)}
+.type-research .row-logo-icon{background:linear-gradient(135deg,#0d2d35,#124558)}
+.type-award .row-logo-icon{background:linear-gradient(135deg,#2e2008,#4a3410)}
+.type-internship .row-logo-icon{background:linear-gradient(135deg,#0d2e1c,#154a30)}
+.type-courses .row-logo-icon{background:linear-gradient(135deg,#2a1e08,#42320e)}
+.type-conference .row-logo-icon{background:linear-gradient(135deg,#2d0f1a,#4a1628)}
+
+/* Title cell */
+td.title-td{padding:.62rem .9rem}
+.row-title{font-size:.82rem;font-weight:600;color:var(--ink);line-height:1.25;margin-bottom:.16rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:color .15s;max-width:260px}
+.row-org{font-size:.68rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:260px}
+.row-org-flag{margin-right:.2rem}
+
+/* Type badge */
+.type-badge{display:inline-flex;align-items:center;gap:.28rem;font-size:.64rem;font-weight:700;padding:.22rem .58rem;border-radius:6px;white-space:nowrap;border:1px solid transparent}
+.tb-scholarship{background:rgba(91,138,255,.12);color:#7aa4ff;border-color:rgba(91,138,255,.2)}
+.tb-fellowship{background:rgba(159,122,250,.12);color:#b59afb;border-color:rgba(159,122,250,.2)}
+.tb-research{background:rgba(34,211,238,.1);color:#4dd8f0;border-color:rgba(34,211,238,.18)}
+.tb-award{background:rgba(245,166,35,.1);color:#f5b84a;border-color:rgba(245,166,35,.18)}
+.tb-internship{background:rgba(45,212,160,.1);color:#4ddcb0;border-color:rgba(45,212,160,.18)}
+.tb-courses{background:rgba(251,146,60,.1);color:#fb9a50;border-color:rgba(251,146,60,.18)}
+.tb-conference{background:rgba(244,114,182,.1);color:#f47ebd;border-color:rgba(244,114,182,.18)}
+
+/* Funding pill */
+.funding-pill{display:inline-flex;align-items:center;gap:.22rem;font-size:.6rem;font-weight:700;padding:.16rem .46rem;border-radius:10px;white-space:nowrap;margin-top:.26rem}
+.funding-full{background:linear-gradient(135deg,rgba(45,212,160,.15),rgba(34,211,238,.08));color:var(--green);border:1px solid rgba(45,212,160,.2)}
+.funding-partial{background:var(--surface3);color:var(--muted);border:1px solid var(--border)}
+
+/* Level chips */
+.level-chips{display:flex;gap:.2rem;flex-wrap:wrap;margin-top:.24rem}
+.lchip{font-size:.57rem;font-weight:600;padding:.08rem .32rem;border-radius:4px;background:var(--surface3);color:var(--ink2);border:1px solid var(--border);text-transform:capitalize}
+
+/* Deadline badge */
+.dl-badge{display:inline-flex;align-items:center;gap:.22rem;font-size:.65rem;font-weight:700;padding:.22rem .52rem;border-radius:8px;white-space:nowrap;border:1px solid transparent}
+.dl-ok{background:rgba(45,212,160,.08);color:var(--green);border-color:rgba(45,212,160,.18)}
+.dl-soon{background:rgba(245,166,35,.1);color:var(--amber);border-color:rgba(245,166,35,.18)}
+.dl-urgent{background:rgba(240,112,112,.1);color:var(--red);border-color:rgba(240,112,112,.18)}
+.dl-exp{background:var(--surface3);color:var(--muted);border-color:var(--border);text-decoration:line-through;opacity:.7}
+.dl-date{font-size:.59rem;font-weight:400;color:var(--muted);display:block;margin-top:.1rem;white-space:nowrap}
+
+/* Status toggle */
+.tbl-status{display:inline-flex;align-items:center;gap:.32rem;font-size:.66rem;font-weight:600;padding:.28rem .62rem;border-radius:8px;cursor:pointer;transition:all .18s;border:1px solid transparent;font-family:inherit;white-space:nowrap}
+.tbl-status .status-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.tbl-status.pub{background:rgba(45,212,160,.08);color:var(--green);border-color:rgba(45,212,160,.2)}
+.tbl-status.pub:hover{background:rgba(45,212,160,.18)}
+.tbl-status.pub .status-dot{background:var(--green);box-shadow:0 0 5px var(--green)}
+.tbl-status.draft{background:rgba(245,166,35,.08);color:var(--amber);border-color:rgba(245,166,35,.2)}
+.tbl-status.draft:hover{background:rgba(245,166,35,.16)}
+.tbl-status.draft .status-dot{background:var(--amber)}
+
+/* Action buttons */
+.tbl-actions{display:flex;gap:.26rem;align-items:center}
+.tbl-btn{width:28px;height:28px;border-radius:7px;border:1px solid var(--border);background:var(--surface3);color:var(--ink2);font-size:.82rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .14s;flex-shrink:0;line-height:1;padding:0}
+.tbl-btn:hover{transform:translateY(-1px)}
+.tbl-btn.edit:hover{border-color:var(--primary);color:var(--primary);background:var(--primary-glow)}
+.tbl-btn.dup:hover{border-color:var(--purple);color:var(--purple);background:var(--purple-bg)}
+.tbl-btn.prev:hover{border-color:var(--cyan);color:var(--cyan);background:var(--cyan-bg)}
+.tbl-btn.del:hover{border-color:var(--red);color:var(--red);background:var(--red-bg)}
+.empty-tbl,.loader-row td{text-align:center;padding:3rem;color:var(--muted);font-size:.82rem}
+.empty-tbl-icon{font-size:2rem;opacity:.3;display:block;margin-bottom:.55rem}
+.tbl-badge{font-size:.58rem;font-weight:700;padding:.11rem .4rem;border-radius:3px;background:var(--primary-glow);color:var(--primary);text-transform:uppercase;white-space:nowrap}
+
+/* FORM PANEL */
+.form-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;position:sticky;top:68px;max-height:calc(100vh - 86px);overflow-y:auto}
+.form-panel::-webkit-scrollbar{width:3px}
+.form-panel::-webkit-scrollbar-thumb{background:var(--border2)}
+.form-hd{display:flex;align-items:center;justify-content:space-between;padding:.75rem 1.1rem;border-bottom:1px solid var(--border);background:var(--surface2);position:sticky;top:0;z-index:10}
+.form-title{font-size:.82rem;font-weight:700}
+.form-title-id{font-size:.66rem;color:var(--primary);background:var(--primary-glow);padding:.1rem .4rem;border-radius:4px}
+.tab-bar{display:flex;border-bottom:1px solid var(--border)}
+.tab-btn{flex:1;background:var(--surface2);border:none;border-bottom:2px solid transparent;padding:.62rem .35rem;font-size:.71rem;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit;transition:color .15s,border-color .15s,background .15s;white-space:nowrap}
+.tab-btn:hover{color:var(--ink2);background:var(--surface3)}
+.tab-btn.active{color:var(--primary);border-bottom-color:var(--primary);background:var(--surface)}
+.tab-pane{display:none}
+.tab-pane.active{display:block}
+.form-body{padding:.95rem 1.1rem}
+.form-group{margin-bottom:.75rem}
+label{display:block;font-size:.67rem;font-weight:600;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.28rem}
+.finput,.fselect,.ftextarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:.52rem .72rem;color:var(--ink);font-size:.8rem;font-family:inherit;outline:none;transition:border-color .2s,box-shadow .2s}
+.finput:focus,.fselect:focus,.ftextarea:focus{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-glow)}
+.ftextarea{resize:vertical;min-height:68px;line-height:1.5}
+.fhint{font-size:.67rem;color:var(--muted);margin-top:.22rem;display:flex;align-items:center;justify-content:space-between}
+.char-count{font-size:.65rem;color:var(--muted);text-align:right}
+.char-count.warn{color:var(--amber)}
+.char-count.over{color:var(--red)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:.65rem}
+.form-divider{border:none;border-top:1px solid var(--border);margin:.65rem 0}
+.toggle-wrap{display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border:1px solid var(--border);border-radius:7px;padding:.52rem .72rem}
+.toggle-lbl{font-size:.79rem;color:var(--ink2)}
+.toggle{position:relative;width:34px;height:19px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0;position:absolute}
+.toggle-track{position:absolute;inset:0;background:var(--surface3);border-radius:20px;cursor:pointer;transition:background .2s;border:1px solid var(--border2)}
+.toggle input:checked + .toggle-track{background:var(--primary)}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:11px;height:11px;background:white;border-radius:50%;transition:transform .2s;pointer-events:none}
+.toggle input:checked ~ .toggle-thumb{transform:translateX(15px)}
+.form-btns{display:flex;gap:.5rem;margin-top:.85rem;padding-top:.75rem;border-top:1px solid var(--border)}
+.btn-save{flex:1;background:var(--primary);color:white;border:none;padding:.62rem;border-radius:8px;font-weight:600;font-size:.81rem;cursor:pointer;font-family:inherit;transition:background .15s;display:flex;align-items:center;justify-content:center;gap:.35rem}
+.btn-save:hover{background:var(--primary-dark)}
+.btn-save:disabled{opacity:.45;cursor:not-allowed}
+.btn-reset{background:var(--surface3);color:var(--ink2);border:1px solid var(--border);padding:.62rem .85rem;border-radius:8px;font-weight:500;font-size:.81rem;cursor:pointer;font-family:inherit}
+.btn-reset:hover{color:var(--ink)}
+.kbd-hint{font-size:.64rem;color:var(--muted);text-align:center;margin-top:.38rem}
+.kbd{background:var(--surface3);border:1px solid var(--border2);border-radius:3px;padding:.05rem .3rem;font-size:.62rem;font-family:monospace}
+
+/* JSON IMPORT */
+.import-body{padding:.95rem 1.1rem}
+.import-intro{font-size:.77rem;color:var(--ink2);line-height:1.62;margin-bottom:.85rem;background:var(--primary-glow);border:1px solid rgba(91,138,255,.18);border-radius:8px;padding:.72rem .88rem}
+.import-intro strong{color:var(--primary);display:block;margin-bottom:.38rem;font-size:.79rem}
+.import-intro ol{padding-left:1.1rem;display:flex;flex-direction:column;gap:.26rem}
+.json-area{width:100%;background:var(--surface3);border:1px solid var(--border);border-radius:8px;padding:.72rem .88rem;color:#2dd4a0;font-family:'Courier New',monospace;font-size:.73rem;min-height:160px;resize:vertical;outline:none;line-height:1.65;transition:border-color .2s;margin-top:.28rem}
+.json-area:focus{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary-glow)}
+.json-area::placeholder{color:var(--muted);font-family:'Inter',sans-serif;font-size:.76rem}
+.import-actions{display:flex;gap:.5rem;margin-top:.75rem}
+.btn-parse{flex:1;background:var(--green-bg);color:var(--green);border:1px solid rgba(45,212,160,.22);padding:.62rem;border-radius:8px;font-weight:700;font-size:.81rem;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn-parse:hover{background:rgba(45,212,160,.18)}
+.btn-clear-json{background:var(--surface3);color:var(--muted);border:1px solid var(--border);padding:.62rem .88rem;border-radius:8px;font-size:.81rem;cursor:pointer;font-family:inherit}
+.btn-clear-json:hover{color:var(--ink2)}
+.import-err{background:var(--red-bg);border:1px solid rgba(240,112,112,.18);border-radius:7px;padding:.58rem .82rem;font-size:.76rem;color:var(--red);margin-top:.65rem;display:none;line-height:1.55}
+.import-preview{margin-top:.85rem;background:var(--surface2);border:1px solid var(--border);border-radius:10px;overflow:hidden;display:none}
+.preview-hd{display:flex;align-items:center;justify-content:space-between;padding:.48rem .82rem;background:var(--surface3);border-bottom:1px solid var(--border);font-size:.65rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.preview-ok{color:var(--green);font-size:.74rem}
+.preview-body{padding:.72rem .82rem;display:flex;flex-direction:column;gap:.26rem}
+.preview-row{display:flex;gap:.42rem;align-items:baseline;font-size:.77rem}
+.pk{color:var(--muted);flex-shrink:0;min-width:88px;font-size:.67rem;text-transform:uppercase}
+.pv{color:var(--ink);font-weight:500;word-break:break-word}
+.btn-import{width:100%;margin-top:.75rem;background:var(--primary);color:white;border:none;padding:.72rem;border-radius:8px;font-weight:700;font-size:.84rem;cursor:pointer;font-family:inherit;box-shadow:0 0 16px var(--primary-glow)}
+.btn-import:hover{background:var(--primary-dark)}
+.btn-import:disabled{opacity:.45;cursor:not-allowed}
+
+/* AI SCRAPER */
+.scraper-body{padding:.95rem 1.1rem}
+.scraper-intro{background:linear-gradient(135deg,rgba(159,122,250,.1),rgba(99,102,241,.08));border:1px solid rgba(159,122,250,.2);border-radius:10px;padding:.82rem .92rem;margin-bottom:.95rem}
+.scraper-intro-title{font-size:.79rem;font-weight:700;color:var(--purple);margin-bottom:.42rem;display:flex;align-items:center;gap:.4rem}
+.scraper-intro p{font-size:.75rem;color:var(--ink2);line-height:1.6;margin-bottom:.48rem}
+.scraper-steps{display:flex;flex-direction:column;gap:.26rem}
+.scraper-step{display:flex;align-items:flex-start;gap:.48rem;font-size:.73rem;color:var(--ink2)}
+.scraper-step-num{width:17px;height:17px;background:var(--purple-bg);color:var(--purple);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.61rem;font-weight:700;flex-shrink:0;margin-top:1px}
+.scraper-what-label{font-size:.67rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:.28rem;margin-top:.55rem}
+.scraper-extracts{display:flex;flex-wrap:wrap;gap:.26rem;margin-bottom:.48rem}
+.scraper-extract-tag{background:var(--purple-bg);border:1px solid rgba(159,122,250,.2);color:var(--purple);font-size:.63rem;font-weight:600;padding:.12rem .42rem;border-radius:10px}
+.scraper-textarea{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:.72rem .82rem;color:var(--ink);font-size:.79rem;font-family:inherit;min-height:150px;resize:vertical;outline:none;line-height:1.6;transition:border-color .2s,box-shadow .2s;margin-top:.28rem}
+.scraper-textarea:focus{border-color:var(--purple);box-shadow:0 0 0 2px rgba(159,122,250,.15)}
+.scraper-textarea::placeholder{color:var(--muted)}
+.scraper-actions{display:flex;gap:.5rem;margin-top:.75rem}
+.btn-scrape{flex:1;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;border:none;padding:.65rem;border-radius:8px;font-weight:700;font-size:.81rem;cursor:pointer;font-family:inherit;transition:opacity .15s;box-shadow:0 2px 14px rgba(99,102,241,.3)}
+.btn-scrape:hover{opacity:.88}
+.btn-scrape:disabled{opacity:.4;cursor:not-allowed}
+.btn-scrape-clear{background:var(--surface3);color:var(--muted);border:1px solid var(--border);padding:.65rem .88rem;border-radius:8px;font-size:.81rem;cursor:pointer;font-family:inherit}
+.btn-scrape-clear:hover{color:var(--ink2)}
+.scrape-status{margin-top:.72rem;display:none}
+.scrape-thinking{display:flex;align-items:center;gap:.62rem;padding:.88rem;background:var(--surface2);border:1px solid var(--border);border-radius:8px;color:var(--ink2);font-size:.79rem}
+.scrape-dots{display:flex;gap:.26rem}
+.scrape-dots span{width:5px;height:5px;background:var(--purple);border-radius:50%;animation:tdot 1.2s infinite}
+.scrape-dots span:nth-child(2){animation-delay:.2s}
+.scrape-dots span:nth-child(3){animation-delay:.4s}
+@keyframes tdot{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.scrape-result{background:var(--surface2);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.scrape-result-hd{display:flex;align-items:center;justify-content:space-between;padding:.52rem .82rem;background:var(--surface3);border-bottom:1px solid var(--border);font-size:.67rem;font-weight:700;color:var(--muted);text-transform:uppercase}
+.scrape-result-ok{color:var(--green);font-size:.74rem;display:flex;align-items:center;gap:.28rem}
+.scrape-fields{padding:.72rem .82rem;display:flex;flex-direction:column;gap:.26rem}
+.sf-row{display:flex;gap:.42rem;align-items:baseline;font-size:.77rem}
+.sf-key{color:var(--muted);flex-shrink:0;min-width:88px;font-size:.65rem;text-transform:uppercase}
+.sf-val{color:var(--ink);font-weight:500;word-break:break-word}
+.notes-preview{background:var(--surface3);border:1px solid var(--border);border-radius:7px;padding:.58rem .78rem;margin-top:.48rem;font-size:.73rem;color:var(--ink2);line-height:1.6;max-height:100px;overflow-y:auto}
+.notes-preview::-webkit-scrollbar{width:3px}
+.notes-preview-lbl{font-size:.63rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--purple);margin-bottom:.28rem;display:flex;align-items:center;gap:.28rem}
+.btn-fill-form{width:100%;margin-top:.75rem;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;border:none;padding:.72rem;border-radius:8px;font-weight:700;font-size:.84rem;cursor:pointer;font-family:inherit;box-shadow:0 2px 14px rgba(99,102,241,.25)}
+.btn-fill-form:hover{opacity:.88}
+.scrape-err{background:var(--red-bg);border:1px solid rgba(240,112,112,.18);border-radius:7px;padding:.58rem .82rem;font-size:.76rem;color:var(--red);line-height:1.55}
+
+/* BULK ACTION BAR */
+.bulk-bar{display:none;align-items:center;gap:.65rem;padding:.52rem .95rem;background:linear-gradient(90deg,var(--primary-glow),rgba(91,138,255,.06));border-bottom:1px solid rgba(91,138,255,.22);flex-wrap:wrap}
+.bulk-bar.visible{display:flex}
+.bulk-count{font-size:.75rem;font-weight:700;color:var(--primary);min-width:72px}
+.bulk-btn{display:inline-flex;align-items:center;gap:.3rem;font-size:.73rem;font-weight:600;padding:.3rem .7rem;border-radius:7px;cursor:pointer;border:1px solid transparent;font-family:inherit;transition:all .14s}
+.bulk-btn.pub{background:var(--green-bg);color:var(--green);border-color:rgba(45,212,160,.22)}
+.bulk-btn.pub:hover{background:rgba(45,212,160,.18)}
+.bulk-btn.draft{background:var(--amber-bg);color:var(--amber);border-color:rgba(245,166,35,.22)}
+.bulk-btn.draft:hover{background:rgba(245,166,35,.18)}
+.bulk-btn.del{background:var(--red-bg);color:var(--red);border-color:rgba(240,112,112,.18)}
+.bulk-btn.del:hover{background:rgba(240,112,112,.22)}
+.bulk-btn:disabled{opacity:.4;cursor:not-allowed}
+.bulk-clear{font-size:.7rem;color:var(--muted);background:none;border:none;cursor:pointer;padding:.3rem .5rem;font-family:inherit}
+.bulk-clear:hover{color:var(--ink2)}
+/* Row checkbox */
+.row-cb{width:15px;height:15px;accent-color:var(--primary);cursor:pointer;flex-shrink:0}
+.cb-th{padding:.6rem .6rem .6rem .9rem!important;cursor:default!important;width:38px!important}
+.cb-td{padding:.5rem .5rem .5rem .85rem!important;vertical-align:middle}
+tbody tr.selected{background:rgba(91,138,255,.06)!important}
+
+/* TOAST */
+#toast{position:fixed;bottom:1.25rem;right:1.25rem;z-index:999;display:flex;flex-direction:column;gap:.45rem;pointer-events:none}
+.toast-item{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:.65rem .95rem;font-size:.79rem;font-weight:500;box-shadow:0 8px 24px rgba(0,0,0,.4);animation:toastIn .22s ease;display:flex;align-items:center;gap:.42rem;min-width:220px;pointer-events:all}
+.toast-item.success{border-color:rgba(45,212,160,.25);color:var(--green)}
+.toast-item.error{border-color:rgba(240,112,112,.25);color:var(--red)}
+.toast-item.info{border-color:rgba(91,138,255,.25);color:var(--primary)}
+@keyframes toastIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.confirm-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:800;align-items:center;justify-content:center;padding:1rem}
+.confirm-overlay.open{display:flex}
+.confirm-box{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.6rem;max-width:340px;width:100%;text-align:center;animation:popIn .18s ease}
+@keyframes popIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.confirm-icon{font-size:1.9rem;margin-bottom:.65rem}
+.confirm-title{font-size:.96rem;font-weight:700;margin-bottom:.35rem}
+.confirm-msg{font-size:.79rem;color:var(--ink2);line-height:1.6;margin-bottom:1.1rem}
+.confirm-btns{display:flex;gap:.62rem;justify-content:center}
+.confirm-yes{background:var(--red);color:white;border:none;padding:.52rem 1.25rem;border-radius:7px;font-weight:600;font-size:.81rem;cursor:pointer;font-family:inherit}
+.confirm-no{background:var(--surface3);color:var(--ink2);border:1px solid var(--border);padding:.52rem 1.25rem;border-radius:7px;font-weight:500;font-size:.81rem;cursor:pointer;font-family:inherit}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.form-panel{position:static;max-height:none}.stats-bar{gap:.45rem}.topbar{padding:0 1rem}.stats-bar{padding:.65rem 1rem}}
+</style>
+</head>
+<body>
+
+<div id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo">S</div>
+    <div class="login-title">ScholarHub Admin</div>
+    <div class="login-sub">Enter your admin password to continue</div>
+    <input class="login-input" type="password" id="pwInput" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">Sign In</button>
+    <div class="login-err" id="loginErr">Incorrect password. Try again.</div>
+  </div>
+</div>
+
+<div id="appShell">
+
+  <div class="topbar">
+    <div class="bar-logo"><div class="bar-mark">S</div>ScholarHub<span style="color:var(--muted);font-weight:400;font-size:.76rem"> / Admin</span></div>
+    <div class="bar-right">
+      <a class="topbar-btn view" href="/" target="_blank">↗ View Site</a>
+      <button class="topbar-btn export" onclick="exportJSON()">⬇ Export JSON</button>
+      <button class="topbar-btn logout" onclick="doLogout()">Log Out</button>
+    </div>
+  </div>
+
+  <!-- Stats bar -->
+  <div class="stats-bar" id="statsBar">
+    <div class="stat-card active" onclick="setFilter('all')" id="sc-all">
+      <div class="stat-icon">📚</div>
+      <div class="stat-info"><div class="stat-num" id="st-total">—</div><div class="stat-lbl">Total</div></div>
+    </div>
+    <div class="stat-card green" onclick="setFilter('published')" id="sc-published">
+      <div class="stat-icon">✅</div>
+      <div class="stat-info"><div class="stat-num" id="st-pub">—</div><div class="stat-lbl">Published</div></div>
+    </div>
+    <div class="stat-card amber" onclick="setFilter('draft')" id="sc-draft">
+      <div class="stat-icon">📝</div>
+      <div class="stat-info"><div class="stat-num" id="st-draft">—</div><div class="stat-lbl">Drafts</div></div>
+    </div>
+    <div class="stat-card" style="--accent:var(--amber)" onclick="setFilter('expiring')" id="sc-expiring">
+      <div class="stat-icon">⏳</div>
+      <div class="stat-info"><div class="stat-num" id="st-exp" style="color:var(--amber)">—</div><div class="stat-lbl">Expiring ≤10d</div></div>
+    </div>
+    <div class="stat-card red" onclick="setFilter('expired')" id="sc-expired">
+      <div class="stat-icon">🚫</div>
+      <div class="stat-info"><div class="stat-num" id="st-dead">—</div><div class="stat-lbl">Expired</div></div>
+    </div>
+    <div class="stat-card purple" onclick="setFilter('fully')" id="sc-fully">
+      <div class="stat-icon">⭐</div>
+      <div class="stat-info"><div class="stat-num" id="st-fully">—</div><div class="stat-lbl">Fully Funded</div></div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="panel">
+      <div class="panel-hd">
+        <div class="panel-title">All Scholarships</div>
+        <div class="panel-hd-right">
+          <input class="search-mini" type="text" placeholder="Search table…" oninput="filterTable(this.value)">
+        </div>
+      </div>
+      <div class="tbl-filter-tabs" id="filterTabs">
+        <button class="tbl-ftab active" data-filter="all" onclick="setFilter('all')">All</button>
+        <button class="tbl-ftab pub" data-filter="published" onclick="setFilter('published')">Published</button>
+        <button class="tbl-ftab draft" data-filter="draft" onclick="setFilter('draft')">Drafts</button>
+        <button class="tbl-ftab" data-filter="expiring" onclick="setFilter('expiring')">⏳ Expiring Soon</button>
+        <button class="tbl-ftab expired" data-filter="expired" onclick="setFilter('expired')">🚫 Expired</button>
+        <button class="tbl-ftab" data-filter="fully" onclick="setFilter('fully')">⭐ Fully Funded</button>
+      </div>
+      <!-- BULK ACTION BAR -->
+      <div class="bulk-bar" id="bulkBar">
+        <span class="bulk-count" id="bulkCount">0 selected</span>
+        <button class="bulk-btn pub" onclick="bulkToggle(true)">✅ Publish</button>
+        <button class="bulk-btn draft" onclick="bulkToggle(false)">📝 Unpublish</button>
+        <button class="bulk-btn del" onclick="bulkDeleteConfirm()">🗑 Delete</button>
+        <button class="bulk-clear" onclick="clearSelection()">✕ Clear</button>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th class="cb-th"><input type="checkbox" class="row-cb" id="selectAllCb" onclick="toggleSelectAll(this)" title="Select all"></th>
+              <th style="cursor:default;width:64px"></th>
+              <th onclick="sortBy('title')">Scholarship / Org</th>
+              <th onclick="sortBy('type')">Type</th>
+              <th onclick="sortBy('level')">Level</th>
+              <th onclick="sortBy('deadline')">Deadline</th>
+              <th onclick="sortBy('is_published')">Status</th>
+              <th style="cursor:default;width:130px">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"><tr class="loader-row"><td colspan="8">Loading…</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="form-panel">
+      <div class="form-hd">
+        <div class="form-title" id="formTitle">+ Add New Scholarship</div>
+        <div class="form-title-id" id="editingId" style="display:none"></div>
+      </div>
+      <div class="tab-bar">
+        <button class="tab-btn active" id="tbtn-manual" onclick="switchTab('manual')">✏ Form</button>
+        <button class="tab-btn" id="tbtn-scraper" onclick="switchTab('scraper')">🤖 AI Scraper</button>
+        <button class="tab-btn" id="tbtn-import" onclick="switchTab('import')">⬆ JSON</button>
+      </div>
+
+      <!-- MANUAL FORM -->
+      <div class="tab-pane active" id="tab-manual">
+        <div class="form-body">
+          <div class="form-group"><label>Title *</label><input class="finput" id="f_title" placeholder="e.g. Chevening Scholarships 2027"></div>
+          <div class="form-row">
+            <div class="form-group"><label>Organization *</label><input class="finput" id="f_org" placeholder="e.g. UK Government"></div>
+            <div class="form-group"><label>Country *</label><input class="finput" id="f_country" placeholder="e.g. UK"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Type *</label>
+              <select class="fselect" id="f_type"><option value="scholarship">Scholarship</option><option value="fellowship">Fellowship</option><option value="research">Research</option><option value="award">Award / Grant</option><option value="internship">Internship</option><option value="courses">Courses</option><option value="conference">Conference</option></select>
+            </div>
+            <div class="form-group"><label>Funding *</label>
+              <select class="fselect" id="f_funding"><option value="fully">Fully Funded</option><option value="partial">Partial</option></select>
+            </div>
+          </div>
+          <div class="form-group"><label>Level (comma-separated) *</label><input class="finput" id="f_level" placeholder="bachelor, master, phd, postdoc, other"><div class="fhint">e.g. master, phd</div></div>
+          <div class="form-row">
+            <div class="form-group"><label>Amount *</label><input class="finput" id="f_amount" placeholder="Full tuition + $1,000/mo"></div>
+            <div class="form-group"><label>Deadline *</label><input class="finput" id="f_deadline" placeholder="Mar 15, 2026"></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Logo (emoji)</label><input class="finput" id="f_logo" placeholder="🎓"></div>
+            <div class="form-group"><label>Days Ago Added</label><input class="finput" type="number" id="f_days" value="0" min="0"></div>
+          </div>
+          <div class="form-group"><label>Tags (comma-separated)</label><input class="finput" id="f_tags" placeholder="UK, Master, Leadership, STEM"></div>
+          <div class="form-group">
+            <label>Image URL <span style="color:var(--muted);font-weight:400;text-transform:none">(optional)</span></label>
+            <input class="finput" id="f_image_url" placeholder="https://example.com/image.jpg" oninput="previewImg(this.value.trim())">
+            <div id="imgPreviewWrap" style="display:none;margin-top:.5rem"><img id="imgPreview" style="width:100%;max-height:120px;object-fit:cover;border-radius:7px;border:1px solid var(--border)" src="" alt="Preview"></div>
+          </div>
+          <hr class="form-divider">
+          <div class="form-group">
+            <label>Description *</label>
+            <textarea class="ftextarea" id="f_desc" placeholder="2-3 sentence overview…" oninput="updateCharCount('f_desc','cc_desc',300)"></textarea>
+            <div class="fhint"><span>2–3 sentences shown on cards</span><span class="char-count" id="cc_desc">0 / 300</span></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label>Field</label><input class="finput" id="f_field" placeholder="All fields"></div>
+            <div class="form-group"><label>Min. GPA</label><input class="finput" id="f_gpa" placeholder="3.0+"></div>
+          </div>
+          <div class="form-group"><label>Citizenship</label><input class="finput" id="f_citizenship" placeholder="Non-UK nationals"></div>
+          <hr class="form-divider">
+          <div class="form-group"><label>Eligibility (one per line)</label><textarea class="ftextarea" id="f_eligibility" style="min-height:78px" placeholder="Must hold a bachelor degree&#10;Minimum GPA of 3.0"></textarea></div>
+          <div class="form-group"><label>Ineligible (one per line)</label><textarea class="ftextarea" id="f_ineligible" style="min-height:54px" placeholder="Citizens of host country"></textarea></div>
+          <div class="form-group"><label>Required Documents (one per line)</label><textarea class="ftextarea" id="f_docs" style="min-height:78px" placeholder="Transcript&#10;Passport copy&#10;Recommendation letter"></textarea></div>
+          <hr class="form-divider">
+          <div class="form-group"><label>Apply URL *</label><input class="finput" id="f_url" placeholder="https://example.com/apply"></div>
+          <div class="form-group"><label>Tip for Applicants</label><textarea class="ftextarea" id="f_tip" placeholder="Insider advice…"></textarea></div>
+          <div class="form-group">
+            <label>▶ YouTube URL <span style="color:var(--muted);font-weight:400;text-transform:none">(optional)</span></label>
+            <input class="finput" id="f_video_url" placeholder="https://youtu.be/xxxxxxxx" oninput="previewVideo(this.value.trim())">
+            <div id="videoPreviewWrap" style="display:none;margin-top:.5rem;border-radius:7px;overflow:hidden;border:1px solid var(--border)">
+              <iframe id="videoPreview" width="100%" height="160" frameborder="0" allowfullscreen style="display:block"></iframe>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>AI Notes <span style="color:var(--muted);font-weight:400;text-transform:none">(extra context for ScholarBot)</span></label>
+            <textarea class="ftextarea" id="f_notes" style="min-height:78px" placeholder="FAQs, selection process, contact info, application steps, insider tips…" oninput="updateCharCount('f_notes','cc_notes',5000)"></textarea>
+            <div class="fhint"><span>Feeds ScholarBot for richer answers</span><span class="char-count" id="cc_notes">0 / 5000</span></div>
+          </div>
+          <div class="form-group">
+            <div class="toggle-wrap">
+              <span class="toggle-lbl">Published (visible on site)</span>
+              <label class="toggle"><input type="checkbox" id="f_published" checked><div class="toggle-track"></div><div class="toggle-thumb"></div></label>
+            </div>
+          </div>
+          <div class="form-btns">
+            <button class="btn-reset" onclick="resetForm()">Clear</button>
+            <button class="btn-save" id="saveBtn" onclick="saveScholarship()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Save Scholarship
+            </button>
+          </div>
+          <div class="kbd-hint">Press <kbd class="kbd">Ctrl</kbd> + <kbd class="kbd">S</kbd> to save</div>
+        </div>
+      </div>
+
+      <!-- AI SCRAPER -->
+      <div class="tab-pane" id="tab-scraper">
+        <div class="scraper-body">
+          <div class="scraper-intro">
+            <div class="scraper-intro-title">🤖 AI Scholarship Extractor</div>
+            <p>Paste any scholarship page text. AI extracts all structured fields <strong>plus</strong> deep context notes that power richer ScholarBot answers.</p>
+            <div class="scraper-what-label">What gets extracted:</div>
+            <div class="scraper-extracts">
+              <span class="scraper-extract-tag">Title & Org</span>
+              <span class="scraper-extract-tag">Eligibility</span>
+              <span class="scraper-extract-tag">Documents</span>
+              <span class="scraper-extract-tag">Deadline</span>
+              <span class="scraper-extract-tag">Amount</span>
+              <span class="scraper-extract-tag">FAQs</span>
+              <span class="scraper-extract-tag">How to Apply</span>
+              <span class="scraper-extract-tag">Contact Info</span>
+              <span class="scraper-extract-tag">Selection Criteria</span>
+            </div>
+            <div class="scraper-steps">
+              <div class="scraper-step"><div class="scraper-step-num">1</div><span>Copy all text from any scholarship website</span></div>
+              <div class="scraper-step"><div class="scraper-step-num">2</div><span>Paste below and click <strong>Extract with AI</strong></span></div>
+              <div class="scraper-step"><div class="scraper-step-num">3</div><span>Review preview → click <strong>Fill Form</strong> → Save</span></div>
+            </div>
+          </div>
+          <label>Paste Scholarship Page Text</label>
+          <textarea class="scraper-textarea" id="scraperInput" placeholder="Paste the full text from a scholarship website here… include title, eligibility, deadline, amount, how to apply, FAQs, contact info, etc."></textarea>
+          <div class="scraper-actions">
+            <button class="btn-scrape" id="scrapeBtn" onclick="runScraper()">🤖 Extract with AI</button>
+            <button class="btn-scrape-clear" onclick="clearScraper()">Clear</button>
+          </div>
+          <div class="scrape-status" id="scrapeStatus"></div>
+        </div>
+      </div>
+
+      <!-- JSON IMPORT -->
+      <div class="tab-pane" id="tab-import">
+        <div class="import-body">
+          <div class="import-intro">
+            <strong>Paste AI-generated JSON directly:</strong>
+            <ol>
+              <li>Copy scholarship text → paste into Claude with your prompt</li>
+              <li>Claude returns clean JSON → copy it</li>
+              <li>Paste below → Parse &amp; Preview → Import</li>
+            </ol>
+          </div>
+          <label>JSON Data</label>
+          <textarea class="json-area" id="jsonInput" placeholder='{"title":"...","org":"...","country":"...","type":"scholarship","level":["master"],"funding":"fully","amount":"...","deadline":"...","description":"...","eligibility":[],"docs":[],"apply_url":"https://...","notes":"..."}'></textarea>
+          <div class="import-err" id="importErr"></div>
+          <div class="import-actions">
+            <button class="btn-parse" onclick="parseJSON()">✓ Parse &amp; Preview</button>
+            <button class="btn-clear-json" onclick="clearImport()">Clear</button>
+          </div>
+          <div class="import-preview" id="importPreview">
+            <div class="preview-hd"><span>Preview</span><span class="preview-ok" id="previewOk"></span></div>
+            <div class="preview-body" id="previewBody"></div>
+            <div style="padding:0 .82rem .82rem"><button class="btn-import" id="importBtn" onclick="doImport()">🚀 Import to Database</button></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-icon" id="confirmIcon">🗑</div>
+    <div class="confirm-title" id="confirmTitle">Delete Scholarship?</div>
+    <div class="confirm-msg" id="confirmMsg">This cannot be undone.</div>
+    <div class="confirm-btns">
+      <button class="confirm-no" onclick="closeConfirm()">Cancel</button>
+      <button class="confirm-yes" id="confirmYes">Delete</button>
+    </div>
+  </div>
+</div>
+
+<script>
+var SESSION_KEY='sh_admin_jwt',authToken=null,tableData=[],filteredData=[],editingId=null,parsedData=null,scrapedData=null;
+var activeFilter='all',searchQ='',sortCol=null,sortDir=1;
+var selectedIds=new Set();
+
+var FLAG_MAP={'Afghanistan':'🇦🇫','USA':'🇺🇸','United States':'🇺🇸','UK':'🇬🇧','United Kingdom':'🇬🇧','Germany':'🇩🇪','China':'🇨🇳','Japan':'🇯🇵','South Korea':'🇰🇷','Korea':'🇰🇷','Turkey':'🇹🇷','Australia':'🇦🇺','Canada':'🇨🇦','France':'🇫🇷','Netherlands':'🇳🇱','UAE':'🇦🇪','Switzerland':'🇨🇭','Sweden':'🇸🇪','Norway':'🇳🇴','Denmark':'🇩🇰','Finland':'🇫🇮','Italy':'🇮🇹','Spain':'🇪🇸','Portugal':'🇵🇹','Belgium':'🇧🇪','Austria':'🇦🇹','Czech Republic':'🇨🇿','Poland':'🇵🇱','Russia':'🇷🇺','India':'🇮🇳','Pakistan':'🇵🇰','Bangladesh':'🇧🇩','Singapore':'🇸🇬','Malaysia':'🇲🇾','Indonesia':'🇮🇩','Taiwan':'🇹🇼','Hong Kong':'🇭🇰','New Zealand':'🇳🇿','Brazil':'🇧🇷','Mexico':'🇲🇽','Saudi Arabia':'🇸🇦','Qatar':'🇶🇦','Kuwait':'🇰🇼','Jordan':'🇯🇴','Egypt':'🇪🇬','Morocco':'🇲🇦','Nigeria':'🇳🇬','South Africa':'🇿🇦','Kenya':'🇰🇪','Online':'🌐','International':'🌍','Global':'🌍','Multiple':'🌍'};
+var TYPE_META={
+  'scholarship':{icon:'🎓',cls:'tb-scholarship',label:'Scholarship'},
+  'fellowship':  {icon:'🤝',cls:'tb-fellowship', label:'Fellowship'},
+  'research':    {icon:'🔬',cls:'tb-research',   label:'Research'},
+  'award':       {icon:'🏆',cls:'tb-award',      label:'Award'},
+  'internship':  {icon:'💼',cls:'tb-internship', label:'Internship'},
+  'courses':     {icon:'📖',cls:'tb-courses',    label:'Courses'},
+  'conference':  {icon:'🎤',cls:'tb-conference', label:'Conference'}
+};
+function getFlag(c){if(!c)return '';var f=FLAG_MAP[c];if(!f){for(var k in FLAG_MAP){if((c+'').toLowerCase().indexOf(k.toLowerCase())!==-1){f=FLAG_MAP[k];break;}}}return f||'🌍';}
+function getTypeMeta(t){return TYPE_META[t]||{icon:'📄',cls:'tb-scholarship',label:t||'Other'};}
+
+function getToken(){return authToken||localStorage.getItem(SESSION_KEY);}
+function apiCall(method,path,body){
+  var opts={method:method,headers:{'Content-Type':'application/json','Authorization':'Bearer '+(getToken()||'')}};
+  if(body)opts.body=JSON.stringify(body);
+  return fetch('/api'+path,opts).then(function(r){
+    if(r.status===401){doLogout();return;}
+    if(!r.ok)return r.text().then(function(t){throw new Error(t||'HTTP '+r.status);});
+    return r.text().then(function(t){return t?JSON.parse(t):null;});
+  });
+}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
+/* AUTH */
+function doLogin(){
+  var pw=document.getElementById('pwInput').value,btn=document.getElementById('loginBtn');
+  if(!pw)return;btn.disabled=true;btn.textContent='Signing in…';
+  fetch('/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.token){authToken=d.token;localStorage.setItem(SESSION_KEY,d.token);document.getElementById('loginScreen').style.display='none';document.getElementById('appShell').style.display='block';loadScholarships();}
+      else{document.getElementById('loginErr').style.display='block';document.getElementById('pwInput').value='';}
+    })
+    .catch(function(){document.getElementById('loginErr').style.display='block';document.getElementById('pwInput').value='';})
+    .finally(function(){btn.disabled=false;btn.textContent='Sign In';});
+}
+function doLogout(){authToken=null;localStorage.removeItem(SESSION_KEY);location.reload();}
+(function(){var tok=localStorage.getItem(SESSION_KEY);if(tok){authToken=tok;document.getElementById('loginScreen').style.display='none';document.getElementById('appShell').style.display='block';loadScholarships();}})();
+
+/* UTILS */
+function urgencyDays(d){if(!d)return 9999;var dd=new Date(d),t=new Date();t.setHours(0,0,0,0);dd.setHours(0,0,0,0);return Math.round((dd-t)/86400000);}
+function deadlineBadge(d){
+  if(!d)return '<span style="color:var(--muted)">—</span>';
+  var days=urgencyDays(d);
+  if(days<0)return '<span class="dl-badge dl-exp">'+esc(d)+'</span>';
+  if(days===0)return '<span class="dl-badge dl-urgent">TODAY</span>';
+  if(days<=10)return '<span class="dl-badge dl-urgent">'+days+'d left</span>';
+  if(days<=30)return '<span class="dl-badge dl-soon">'+days+'d left</span>';
+  return '<span class="dl-badge dl-ok">'+esc(d)+'</span>';
+}
+
+/* DATA */
+function loadScholarships(){
+  apiCall('GET','/scholarships/all').then(function(rows){
+    tableData=rows||[];
+    updateStats();
+    applyTableFilter();
+  }).catch(function(err){if(err)toast('Load failed: '+err.message,'error');});
+}
+function updateStats(){
+  var pub=0,draft=0,expiring=0,expired=0,fully=0;
+  tableData.forEach(function(r){
+    if(r.is_published)pub++;else draft++;
+    var d=urgencyDays(r.deadline);
+    if(d<0)expired++;else if(d<=10)expiring++;
+    if(r.funding==='fully')fully++;
+  });
+  document.getElementById('st-total').textContent=tableData.length;
+  document.getElementById('st-pub').textContent=pub;
+  document.getElementById('st-draft').textContent=draft;
+  document.getElementById('st-exp').textContent=expiring;
+  document.getElementById('st-dead').textContent=expired;
+  document.getElementById('st-fully').textContent=fully;
+}
+
+/* FILTER + SORT */
+function setFilter(f){
+  activeFilter=f;
+  document.querySelectorAll('.tbl-ftab').forEach(function(b){b.classList.toggle('active',b.dataset.filter===f);});
+  document.querySelectorAll('.stat-card').forEach(function(c){c.classList.remove('active');});
+  var sc=document.getElementById('sc-'+f);if(sc)sc.classList.add('active');
+  applyTableFilter();
+}
+function filterTable(q){searchQ=q.toLowerCase();applyTableFilter();}
+function applyTableFilter(){
+  filteredData=tableData.filter(function(r){
+    var d=urgencyDays(r.deadline);
+    if(activeFilter==='published'&&!r.is_published)return false;
+    if(activeFilter==='draft'&&r.is_published)return false;
+    if(activeFilter==='expiring'&&!(d>=0&&d<=10))return false;
+    if(activeFilter==='expired'&&d>=0)return false;
+    if(activeFilter==='fully'&&r.funding!=='fully')return false;
+    if(searchQ){var h=(r.title+' '+r.org+' '+r.country+' '+r.type).toLowerCase();if(h.indexOf(searchQ)===-1)return false;}
+    return true;
+  });
+  if(sortCol)doSort(sortCol,false);
+  else renderTable(filteredData);
+}
+function sortBy(col){
+  if(sortCol===col)sortDir*=-1;else{sortCol=col;sortDir=1;}
+  document.querySelectorAll('thead th').forEach(function(th){th.classList.remove('sorted-asc','sorted-desc');});
+  var ths=document.querySelectorAll('thead th');
+  var cols=['','title','type','level','deadline','is_published',''];
+  var idx=cols.indexOf(col);if(idx>0&&ths[idx])ths[idx].classList.add(sortDir===1?'sorted-asc':'sorted-desc');
+  doSort(col,true);
+}
+function doSort(col,render){
+  filteredData.sort(function(a,b){
+    var av=a[col],bv=b[col];
+    if(col==='deadline'){av=urgencyDays(a.deadline);bv=urgencyDays(b.deadline);}
+    if(col==='is_published'){av=a.is_published?1:0;bv=b.is_published?1:0;}
+    if(av===null||av===undefined)av='';if(bv===null||bv===undefined)bv='';
+    if(av<bv)return -1*sortDir;if(av>bv)return 1*sortDir;return 0;
+  });
+  if(render)renderTable(filteredData);
+}
+
+function renderTable(rows){
+  var tb=document.getElementById('tableBody');
+  if(!rows.length){
+    tb.innerHTML='<tr><td colspan="8" class="empty-tbl"><span class="empty-tbl-icon">🔍</span>No scholarships match your filter</td></tr>';
+    return;
+  }
+  tb.innerHTML=rows.map(function(r){
+    var tm=getTypeMeta(r.type);
+    var flag=getFlag(r.country);
+    var isExp=urgencyDays(r.deadline)<0;
+    var typeClass='type-'+(r.type||'scholarship');
+    var isSel=selectedIds.has(r.id);
+
+    /* Checkbox */
+    var cbCell='<td class="cb-td"><input type="checkbox" class="row-cb" '+(isSel?'checked':'')+' onclick="toggleSelect('+r.id+',this)"></td>';
+
+    /* Logo tile — real image or colored icon tile */
+    var logoInner=r.image_url
+      ?'<img src="'+esc(r.image_url)+'" onerror="this.parentNode.innerHTML=\'<div class=&quot;row-logo-icon&quot;>'+esc(r.logo||tm.icon)+'</div>\'">'
+      :'<div class="row-logo-icon">'+esc(r.logo||tm.icon)+'</div>';
+    var logo='<td style="padding:.7rem .75rem .7rem .9rem"><div class="row-logo-wrap '+typeClass+'">'+logoInner+'</div></td>';
+
+    /* Title + org subtitle */
+    var titleCell='<td class="title-td" title="'+esc(r.title)+'">'
+      +'<div class="row-title">'+esc(r.title)+'</div>'
+      +'<div class="row-org"><span class="row-org-flag">'+flag+'</span>'+esc(r.org||'')+'</div>'
+      +'</td>';
+
+    /* Type badge + funding pill */
+    var typeCell='<td style="padding:.6rem .7rem">'
+      +'<span class="type-badge '+tm.cls+'">'+tm.icon+' '+tm.label+'</span>'
+      +(r.funding==='fully'
+        ?'<div class="funding-pill funding-full">⭐ Fully Funded</div>'
+        :'<div class="funding-pill funding-partial">Partial</div>')
+      +'</td>';
+
+    /* Level chips */
+    var lvls=(r.level||[]).slice(0,3).map(function(l){return '<span class="lchip">'+esc(l)+'</span>';}).join('');
+    var levelCell='<td style="padding:.6rem .7rem"><div class="level-chips">'+lvls+'</div></td>';
+
+    /* Deadline */
+    var dlCell='<td style="padding:.6rem .7rem">'+deadlineBadge(r.deadline)+'</td>';
+
+    /* Status toggle */
+    var isPub=r.is_published;
+    var statusCell='<td style="padding:.6rem .7rem">'
+      +'<button class="tbl-status '+(isPub?'pub':'draft')+'" onclick="quickToggle('+r.id+','+!isPub+',this)" title="Click to toggle publish">'
+      +'<span class="status-dot"></span>'+(isPub?'Live':'Draft')
+      +'</button></td>';
+
+    /* Actions */
+    var actions='<td style="padding:.6rem .75rem .6rem .6rem"><div class="tbl-actions">'
+      +'<button class="tbl-btn edit" onclick="editRow('+r.id+')" title="Edit">✏</button>'
+      +'<button class="tbl-btn dup" onclick="duplicateRow('+r.id+')" title="Duplicate">⧉</button>'
+      +'<button class="tbl-btn prev" onclick="window.open(\'/?id='+r.id+'\',\'_blank\')" title="Preview on site">↗</button>'
+      +'<button class="tbl-btn del" onclick="confirmDelete('+r.id+',\''+esc(r.title)+'\')" title="Delete">🗑</button>'
+      +'</div></td>';
+
+    return '<tr'+(isExp?' class="expired-row'+(isSel?' selected':'')+'"':(isSel?' class="selected"':''))+'>'+cbCell+logo+titleCell+typeCell+levelCell+dlCell+statusCell+actions+'</tr>';
+  }).join('');
+  /* sync select-all checkbox state */
+  var allCb=document.getElementById('selectAllCb');
+  if(allCb){var visIds=rows.map(function(r){return r.id;});allCb.checked=visIds.length>0&&visIds.every(function(id){return selectedIds.has(id);});allCb.indeterminate=!allCb.checked&&visIds.some(function(id){return selectedIds.has(id);});}
+}
+
+/* QUICK TOGGLE */
+function quickToggle(id,newVal,btn){
+  btn.disabled=true;btn.textContent='…';
+  apiCall('PATCH','/scholarships/'+id,{is_published:newVal})
+    .then(function(){
+      var r=tableData.find(function(x){return x.id===id;});if(r)r.is_published=newVal;
+      updateStats();applyTableFilter();
+      toast(newVal?'Published ✓':'Set to Draft','success');
+    })
+    .catch(function(err){toast('Toggle failed: '+err.message,'error');btn.disabled=false;});
+}
+
+/* DUPLICATE */
+function duplicateRow(id){
+  var r=tableData.find(function(x){return x.id===id;});if(!r)return;
+  var d=JSON.parse(JSON.stringify(r));
+  d.title='[COPY] '+d.title;d.is_published=false;
+  delete d.id;delete d.created_at;delete d.updated_at;
+  editingId=null;switchTab('manual');
+  fillFormFromData(d);
+  document.getElementById('formTitle').textContent='Duplicate Scholarship';
+  document.getElementById('saveBtn').textContent='Save as New';
+  toast('Duplicated — edit and save as new','info');
+}
+
+/* EXPORT */
+function exportJSON(){
+  if(!tableData.length){toast('No data to export','error');return;}
+  var blob=new Blob([JSON.stringify(tableData,null,2)],{type:'application/json'});
+  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='scholarhub-export-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
+  toast('Exported '+tableData.length+' scholarships','success');
+}
+
+/* CHAR COUNTER */
+function updateCharCount(inputId,countId,limit){
+  var val=document.getElementById(inputId).value.length;
+  var el=document.getElementById(countId);el.textContent=val+' / '+limit;
+  el.className='char-count'+(val>limit?' over':val>limit*.8?' warn':'');
+}
+
+/* FORM PREVIEW */
+function previewImg(url){var w=document.getElementById('imgPreviewWrap'),p=document.getElementById('imgPreview');if(url){p.src=url;w.style.display='block';}else{w.style.display='none';}}
+function previewVideo(url){
+  var w=document.getElementById('videoPreviewWrap'),f=document.getElementById('videoPreview');
+  if(!url){w.style.display='none';f.src='';return;}
+  var m=url.match(/(?:youtu\.be\/|youtube\.com\/(?:watch\?.*v=|embed\/|shorts\/))([\w-]{11})/);
+  if(m){f.src='https://www.youtube-nocookie.com/embed/'+m[1];w.style.display='block';}else{w.style.display='none';}
+}
+
+/* FORM DATA */
+function getFormData(){
+  function lines(id){return document.getElementById(id).value.split('\n').map(function(s){return s.trim();}).filter(Boolean);}
+  function csv(id){return document.getElementById(id).value.split(',').map(function(s){return s.trim();}).filter(Boolean);}
+  return{title:document.getElementById('f_title').value.trim(),org:document.getElementById('f_org').value.trim(),country:document.getElementById('f_country').value.trim(),type:document.getElementById('f_type').value,funding:document.getElementById('f_funding').value,level:csv('f_level'),amount:document.getElementById('f_amount').value.trim(),deadline:document.getElementById('f_deadline').value.trim(),logo:document.getElementById('f_logo').value.trim()||'🎓',days_ago:parseInt(document.getElementById('f_days').value)||0,tags:csv('f_tags'),description:document.getElementById('f_desc').value.trim(),field:document.getElementById('f_field').value.trim()||'Any',gpa:document.getElementById('f_gpa').value.trim()||'No minimum',citizenship:document.getElementById('f_citizenship').value.trim()||'Any nationality',eligibility:lines('f_eligibility'),ineligible:lines('f_ineligible'),docs:lines('f_docs'),apply_url:document.getElementById('f_url').value.trim()||'#',image_url:document.getElementById('f_image_url').value.trim()||null,tip:document.getElementById('f_tip').value.trim(),video_url:document.getElementById('f_video_url').value.trim()||null,is_published:document.getElementById('f_published').checked};
+}
+function validateForm(d){if(!d.title){toast('Title required','error');return false;}if(!d.org){toast('Organization required','error');return false;}if(!d.country){toast('Country required','error');return false;}if(!d.amount){toast('Amount required','error');return false;}if(!d.deadline){toast('Deadline required','error');return false;}if(!d.description){toast('Description required','error');return false;}if(!d.level.length){toast('Level required (e.g. master)','error');return false;}return true;}
+function saveScholarship(){
+  var d=getFormData();if(!validateForm(d))return;
+  var btn=document.getElementById('saveBtn');btn.disabled=true;btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Saving…';
+  var p=editingId?apiCall('PATCH','/scholarships/'+editingId,d):apiCall('POST','/scholarships',d);
+  p.then(function(){toast(editingId?'✓ Updated!':'✓ Added!','success');resetForm();loadScholarships();})
+   .catch(function(err){toast('Save failed: '+err.message,'error');})
+   .finally(function(){btn.disabled=false;btn.innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> '+(editingId?'Update Scholarship':'Save Scholarship');});
+}
+function editRow(id){
+  var r=tableData.find(function(x){return x.id===id;});if(!r)return;
+  editingId=id;switchTab('manual');
+  document.getElementById('formTitle').textContent='Edit Scholarship';
+  var eid=document.getElementById('editingId');eid.textContent='ID: '+id;eid.style.display='';
+  document.getElementById('saveBtn').innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Update Scholarship';
+  var F={'f_title':r.title,'f_org':r.org,'f_country':r.country,'f_amount':r.amount,'f_deadline':r.deadline,'f_logo':r.logo,'f_desc':r.description,'f_field':r.field,'f_gpa':r.gpa,'f_citizenship':r.citizenship,'f_url':r.apply_url,'f_image_url':r.image_url||'','f_tip':r.tip||'','f_video_url':r.video_url||'','f_notes':r.notes||''};
+  Object.keys(F).forEach(function(k){var el=document.getElementById(k);if(el)el.value=F[k]||'';});
+  document.getElementById('f_type').value=r.type||'scholarship';
+  document.getElementById('f_funding').value=r.funding||'fully';
+  document.getElementById('f_level').value=(r.level||[]).join(', ');
+  document.getElementById('f_days').value=r.days_ago||0;
+  document.getElementById('f_tags').value=(r.tags||[]).join(', ');
+  document.getElementById('f_eligibility').value=(r.eligibility||[]).join('\n');
+  document.getElementById('f_ineligible').value=(r.ineligible||[]).join('\n');
+  document.getElementById('f_docs').value=(r.docs||[]).join('\n');
+  document.getElementById('f_published').checked=r.is_published!==false;
+  previewImg(r.image_url||'');previewVideo(r.video_url||'');
+  updateCharCount('f_desc','cc_desc',300);updateCharCount('f_notes','cc_notes',5000);
+  document.querySelector('.form-panel').scrollTo({top:0,behavior:'smooth'});
+}
+function resetForm(){
+  editingId=null;
+  document.getElementById('formTitle').textContent='+ Add New Scholarship';
+  document.getElementById('editingId').style.display='none';
+  document.getElementById('saveBtn').innerHTML='<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save Scholarship';
+  ['f_title','f_org','f_country','f_amount','f_deadline','f_logo','f_tags','f_image_url','f_desc','f_field','f_gpa','f_citizenship','f_eligibility','f_ineligible','f_docs','f_url','f_tip','f_video_url','f_notes'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('f_type').value='scholarship';document.getElementById('f_funding').value='fully';
+  document.getElementById('f_level').value='';document.getElementById('f_days').value='0';document.getElementById('f_published').checked=true;
+  document.getElementById('imgPreviewWrap').style.display='none';document.getElementById('videoPreviewWrap').style.display='none';
+  document.getElementById('cc_desc').textContent='0 / 300';document.getElementById('cc_notes').textContent='0 / 5000';
+}
+function fillFormFromData(d){
+  switchTab('manual');
+  var map={'f_title':d.title,'f_org':d.org,'f_country':d.country,'f_amount':d.amount,'f_deadline':d.deadline,'f_logo':d.logo,'f_desc':d.description,'f_field':d.field,'f_gpa':d.gpa,'f_citizenship':d.citizenship,'f_url':d.apply_url||d.url,'f_image_url':d.image_url,'f_tip':d.tip,'f_video_url':d.video_url,'f_notes':d.notes};
+  Object.keys(map).forEach(function(k){var el=document.getElementById(k);if(el)el.value=map[k]||'';});
+  document.getElementById('f_eligibility').value=(d.eligibility||[]).join('\n');
+  document.getElementById('f_ineligible').value=(d.ineligible||[]).join('\n');
+  document.getElementById('f_docs').value=(d.docs||[]).join('\n');
+  document.getElementById('f_tags').value=(d.tags||[]).join(', ');
+  document.getElementById('f_level').value=(d.level||[]).join(', ');
+  if(d.type)document.getElementById('f_type').value=d.type;
+  if(d.funding)document.getElementById('f_funding').value=d.funding;
+  if(d.is_published!==undefined)document.getElementById('f_published').checked=d.is_published!==false;
+  previewImg(d.image_url||'');
+  updateCharCount('f_desc','cc_desc',300);updateCharCount('f_notes','cc_notes',5000);
+  document.querySelector('.form-panel').scrollTo({top:0,behavior:'smooth'});
+  toast('Form filled! Review and save.','success');
+}
+
+/* TAB */
+function switchTab(name){
+  document.querySelectorAll('.tab-pane').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.remove('active');});
+  document.getElementById('tab-'+name).classList.add('active');
+  document.getElementById('tbtn-'+name).classList.add('active');
+  if(name==='manual')document.getElementById('formTitle').textContent=editingId?'Edit Scholarship':'+ Add New Scholarship';
+  else if(name==='scraper')document.getElementById('formTitle').textContent='AI Scraper';
+  else document.getElementById('formTitle').textContent='JSON Import';
+}
+
+/* AI SCRAPER */
+function runScraper(){
+  var text=document.getElementById('scraperInput').value.trim();
+  if(!text||text.length<50){toast('Paste more content (at least a few paragraphs)','error');return;}
+  var btn=document.getElementById('scrapeBtn');btn.disabled=true;btn.textContent='Extracting…';
+  var status=document.getElementById('scrapeStatus');status.style.display='block';
+  status.innerHTML='<div class="scrape-thinking"><div class="scrape-dots"><span></span><span></span><span></span></div><span>AI is reading and extracting all details…</span></div>';
+  var sys='You are an expert scholarship data extractor. Extract comprehensive structured information from the provided text. Return ONLY valid JSON (no markdown, no explanation). Use this exact schema:\n{"title":"full scholarship name","org":"organization/institution name","country":"host country","type":"scholarship|fellowship|research|award|internship|courses|conference","level":["bachelor"|"master"|"phd"|"postdoc"|"other"],"funding":"fully|partial","amount":"what is covered e.g. full tuition + monthly stipend + travel","deadline":"deadline date as text e.g. Mar 15, 2026","description":"2-3 sentence overview","field":"eligible fields of study","gpa":"minimum GPA if mentioned, else empty string","citizenship":"who is eligible by nationality","eligibility":["requirement 1","requirement 2"],"ineligible":["who cannot apply"],"docs":["required document 1","required document 2"],"apply_url":"official application URL if found, else empty string","tip":"one most helpful application tip based on the content","tags":["tag1","tag2","tag3"],"logo":"single most relevant emoji","notes":"COMPREHENSIVE extra context for an AI chatbot. Include: how the selection process works, what evaluators look for, FAQs, application steps, contact information, interview process, key dates, scholarship prestige/history, commonly asked questions. Be thorough."}\nReturn ONLY the JSON object.';
+  fetch('/api/ai/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'llama-3.3-70b-versatile',messages:[{role:'system',content:sys},{role:'user',content:text.substring(0,7000)}],max_tokens:2200,temperature:0.2})})
+    .then(function(r){return r.json();})
+    .then(function(d){
+      if(d.error)throw new Error(d.error.message);
+      var raw=d.choices[0].message.content.trim().replace(/^```[a-z]*\s*/i,'').replace(/\s*```$/,'').trim();
+      var parsed;try{parsed=JSON.parse(raw);}catch(ex){throw new Error('AI returned invalid JSON. Try with more complete page text.');}
+      if(!parsed.title)throw new Error('Could not extract title. Paste more complete scholarship page text.');
+      scrapedData=parsed;
+      var fields=[['Title',esc(parsed.title)],['Org',esc(parsed.org)],['Country',esc(parsed.country)],['Type','<span class="tbl-badge">'+esc(parsed.type)+'</span>'],['Level',esc((parsed.level||[]).join(', '))],['Funding',parsed.funding==='fully'?'<span style="color:var(--green)">⭐ Fully Funded</span>':'<span style="color:var(--amber)">Partial</span>'],['Amount',esc(parsed.amount)],['Deadline','<span style="color:var(--amber)">'+esc(parsed.deadline)+'</span>'],['Eligibility',esc((parsed.eligibility||[]).slice(0,2).join('; '))+(parsed.eligibility&&parsed.eligibility.length>2?' +more':'')],['Documents',esc((parsed.docs||[]).slice(0,2).join(', '))+(parsed.docs&&parsed.docs.length>2?' +more':'')]];
+      var notesLen=parsed.notes?(parsed.notes.length+' chars'):'none';
+      status.innerHTML='<div class="scrape-result"><div class="scrape-result-hd"><span>Extracted Data</span><span class="scrape-result-ok">✓ All fields ready</span></div><div class="scrape-fields">'+fields.map(function(f){return '<div class="sf-row"><span class="sf-key">'+f[0]+'</span><span class="sf-val">'+f[1]+'</span></div>';}).join('')+'</div>'+(parsed.notes?'<div style="padding:.5rem .82rem"><div class="notes-preview-lbl">🤖 AI Notes ('+notesLen+')</div><div class="notes-preview">'+esc(parsed.notes.substring(0,400))+(parsed.notes.length>400?'…':'')+'</div></div>':'')+'<div style="padding:.5rem .82rem .82rem"><button class="btn-fill-form" onclick="fillFormFromData(scrapedData)">✏ Fill Form with These Details</button></div></div>';
+    })
+    .catch(function(err){status.innerHTML='<div class="scrape-err">⚠ '+esc(err.message)+'</div>';})
+    .finally(function(){btn.disabled=false;btn.textContent='🤖 Extract with AI';});
+}
+function clearScraper(){document.getElementById('scraperInput').value='';document.getElementById('scrapeStatus').style.display='none';document.getElementById('scrapeStatus').innerHTML='';scrapedData=null;}
+
+/* JSON IMPORT */
+var VTYPES=['scholarship','fellowship','research','award','internship','courses','conference'];
+var VREQUIRED=['title','org','country','type','level','funding','amount','deadline','description'];
+function parseJSON(){
+  var raw=document.getElementById('jsonInput').value.trim();
+  var errEl=document.getElementById('importErr'),preEl=document.getElementById('importPreview');
+  errEl.style.display='none';preEl.style.display='none';parsedData=null;
+  if(!raw){showErr('Paste some JSON first.');return;}
+  raw=raw.replace(/^```[a-zA-Z]*\s*/,'').replace(/\s*```$/,'').trim();
+  var d;try{d=JSON.parse(raw);}catch(ex){showErr('Invalid JSON: '+ex.message);return;}
+  var missing=VREQUIRED.filter(function(f){return!d[f];});
+  if(missing.length){showErr('Missing: '+missing.join(', '));return;}
+  if(VTYPES.indexOf(d.type)===-1){showErr('type must be one of: '+VTYPES.join(', '));return;}
+  if(!Array.isArray(d.level)||!d.level.length){showErr('"level" must be a non-empty array');return;}
+  d.logo=d.logo||'🎓';d.days_ago=d.days_ago||0;d.tags=d.tags||[];d.eligibility=d.eligibility||[];d.ineligible=d.ineligible||[];d.docs=d.docs||[];d.apply_url=d.apply_url||d.url||'#';d.tip=d.tip||'';d.video_url=d.video_url||null;d.field=d.field||'Any';d.gpa=d.gpa||'No minimum';d.citizenship=d.citizenship||'Any nationality';d.notes=d.notes||null;d.is_published=(d.is_published!==false);
+  parsedData=d;
+  var rows=[['Title',esc(d.title)],['Org',esc(d.org)],['Country',esc(d.country)],['Type','<span class="tbl-badge">'+esc(d.type)+'</span>'],['Level',esc(d.level.join(', '))],['Funding',d.funding==='fully'?'<span style="color:var(--green)">Fully Funded</span>':'<span style="color:var(--amber)">Partial</span>'],['Amount',esc(d.amount)],['Deadline',esc(d.deadline)],['Description',esc(d.description.substring(0,90))+'…'],['Notes',d.notes?'<span style="color:var(--purple)">✓ '+d.notes.length+' chars</span>':'<span style="color:var(--muted)">none</span>'],['Published',d.is_published?'<span style="color:var(--green)">Yes</span>':'<span style="color:var(--amber)">Draft</span>']];
+  document.getElementById('previewBody').innerHTML=rows.map(function(r){return '<div class="preview-row"><span class="pk">'+r[0]+'</span><span class="pv">'+r[1]+'</span></div>';}).join('');
+  document.getElementById('previewOk').textContent='✓ Valid – ready to import';
+  preEl.style.display='block';
+}
+function showErr(msg){var el=document.getElementById('importErr');el.textContent='✗  '+msg;el.style.display='block';}
+function clearImport(){document.getElementById('jsonInput').value='';document.getElementById('importErr').style.display='none';document.getElementById('importPreview').style.display='none';parsedData=null;}
+function doImport(){
+  if(!parsedData){showErr('Nothing to import. Parse first.');return;}
+  var btn=document.getElementById('importBtn');btn.disabled=true;btn.textContent='Importing…';
+  var payload={};var skip=['id','url','created_at','updated_at','notes'];
+  Object.keys(parsedData).forEach(function(k){if(skip.indexOf(k)===-1)payload[k]=parsedData[k];});
+  apiCall('POST','/scholarships',payload)
+    .then(function(){toast('🎉 "'+parsedData.title+'" imported!','success');clearImport();loadScholarships();switchTab('manual');})
+    .catch(function(err){showErr('Import failed: '+err.message);toast('Import failed','error');})
+    .finally(function(){btn.disabled=false;btn.textContent='🚀 Import to Database';});
+}
+
+/* BULK ACTIONS */
+function toggleSelect(id,cb){
+  if(cb.checked)selectedIds.add(id);else selectedIds.delete(id);
+  updateBulkBar();
+  /* highlight row */
+  var tr=cb.closest('tr');if(tr){if(cb.checked)tr.classList.add('selected');else tr.classList.remove('selected');}
+  /* sync header checkbox */
+  var allCb=document.getElementById('selectAllCb');
+  if(allCb){var visIds=filteredData.map(function(r){return r.id;});allCb.checked=visIds.length>0&&visIds.every(function(id){return selectedIds.has(id);});allCb.indeterminate=!allCb.checked&&visIds.some(function(id){return selectedIds.has(id);});}
+}
+function toggleSelectAll(cb){
+  filteredData.forEach(function(r){if(cb.checked)selectedIds.add(r.id);else selectedIds.delete(r.id);});
+  renderTable(filteredData);
+  updateBulkBar();
+}
+function updateBulkBar(){
+  var n=selectedIds.size;
+  var bar=document.getElementById('bulkBar');
+  var cnt=document.getElementById('bulkCount');
+  if(n>0){bar.classList.add('visible');cnt.textContent=n+' selected';}
+  else{bar.classList.remove('visible');}
+}
+function clearSelection(){selectedIds.clear();updateBulkBar();renderTable(filteredData);}
+function bulkToggle(pub){
+  var ids=Array.from(selectedIds);if(!ids.length)return;
+  var btns=document.querySelectorAll('.bulk-btn');btns.forEach(function(b){b.disabled=true;});
+  var label=pub?'Publishing…':'Unpublishing…';
+  document.querySelector('.bulk-btn.'+(pub?'pub':'draft')).textContent=label;
+  var calls=ids.map(function(id){return apiCall('PATCH','/scholarships/'+id,{is_published:pub}).then(function(){var r=tableData.find(function(x){return x.id===id;});if(r)r.is_published=pub;});});
+  Promise.all(calls)
+    .then(function(){toast((pub?'Published':'Unpublished')+' '+ids.length+' scholarship'+(ids.length>1?'s':''),'success');clearSelection();updateStats();applyTableFilter();})
+    .catch(function(err){toast('Bulk toggle failed: '+err.message,'error');})
+    .finally(function(){btns.forEach(function(b){b.disabled=false;});document.querySelector('.bulk-btn.pub').textContent='✅ Publish';document.querySelector('.bulk-btn.draft').textContent='📝 Unpublish';});
+}
+function bulkDeleteConfirm(){
+  var n=selectedIds.size;if(!n)return;
+  pendingDeleteId='__bulk__';
+  document.getElementById('confirmIcon').textContent='🗑';
+  document.getElementById('confirmTitle').textContent='Delete '+n+' Scholarship'+(n>1?'s?':'?');
+  document.getElementById('confirmMsg').textContent='This will permanently delete '+n+' selected item'+(n>1?'s':'')+'. This cannot be undone.';
+  document.getElementById('confirmOverlay').classList.add('open');
+  document.getElementById('confirmYes').onclick=function(){closeConfirm();doBulkDelete();};
+}
+function doBulkDelete(){
+  var ids=Array.from(selectedIds);if(!ids.length)return;
+  var calls=ids.map(function(id){return apiCall('DELETE','/scholarships/'+id).then(function(){if(editingId===id)resetForm();});});
+  Promise.all(calls)
+    .then(function(){toast('Deleted '+ids.length+' scholarship'+(ids.length>1?'s':''),'success');clearSelection();loadScholarships();})
+    .catch(function(err){toast('Bulk delete failed: '+err.message,'error');});
+}
+
+/* DELETE */
+var pendingDeleteId=null;
+function confirmDelete(id,title){
+  pendingDeleteId=id;
+  document.getElementById('confirmIcon').textContent='🗑';
+  document.getElementById('confirmTitle').textContent='Delete Scholarship?';
+  document.getElementById('confirmMsg').textContent='Delete "'+title+'"? This cannot be undone.';
+  document.getElementById('confirmOverlay').classList.add('open');
+  document.getElementById('confirmYes').onclick=function(){var id=pendingDeleteId;closeConfirm();doDelete(id);};
+}
+function closeConfirm(){document.getElementById('confirmOverlay').classList.remove('open');pendingDeleteId=null;}
+function doDelete(id){
+  apiCall('DELETE','/scholarships/'+id)
+    .then(function(){toast('Deleted','success');if(editingId===id)resetForm();loadScholarships();})
+    .catch(function(err){toast('Delete failed: '+err.message,'error');});
+}
+
+/* TOAST */
+function toast(msg,type){
+  var icons={success:'✓',error:'✗',info:'ℹ'};
+  var el=document.createElement('div');el.className='toast-item '+(type||'info');
+  el.innerHTML='<span>'+(icons[type]||icons.info)+'</span> '+msg;
+  document.getElementById('toast').appendChild(el);
+  setTimeout(function(){if(el.parentNode)el.parentNode.removeChild(el);},3000);
+}
+
+/* KEYBOARD SHORTCUTS */
+document.addEventListener('keydown',function(ev){
+  if((ev.ctrlKey||ev.metaKey)&&ev.key==='s'){
+    ev.preventDefault();
+    var tab=document.querySelector('.tab-btn.active');
+    if(tab&&tab.id==='tbtn-manual')saveScholarship();
+  }
+  if(ev.key==='Escape')closeConfirm();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,6 @@
+# Only allow internal rewrites to reach router.php
+# Block direct browser access to config files
+<Files "config.php">
+    Order allow,deny
+    Deny from all
+</Files>

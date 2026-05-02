@@ -1,0 +1,13 @@
+Options -Indexes
+RewriteEngine On
+
+# Admin page
+RewriteRule ^admin/?$ /admin.html [L]
+
+# Route all /api/* requests to the PHP router
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^api/(.*)$ /api/router.php [QSA,L]
+
+# Serve index.html as default
+DirectoryIndex index.html
